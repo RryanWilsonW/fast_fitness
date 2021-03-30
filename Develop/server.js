@@ -2,6 +2,7 @@ const express = require('express');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 //const db = require('./models');
+const router = require('./routes/api');
 
 const PORT = process.env.PORT || 8080;
 
@@ -14,11 +15,14 @@ app.use(express.json());
 
 app.use(express.static('./public'));
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/workout', {useNewUrlParser: true});
+let db = mongoose.connect( process.env.MONGODB_URI || 'mongodb://localhost/workout', {useNewUrlParser: true});
 
-//require("./routes/api.js");
-require("./routes/html.js");
+app.use(router);
+require("./routes/api.js")(app);
+require("./routes/html.js")(app);
 
 app.listen(PORT, () => {
     console.log('Listening on port' + PORT);
 });
+
+module.exports = db;
